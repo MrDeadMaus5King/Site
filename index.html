@@ -157,14 +157,24 @@
         .btn-telegram { background: linear-gradient(135deg, #29a9eb, #0088cc); box-shadow: 0 8px 20px -6px rgba(41, 169, 235, 0.5); }
         .btn-steam { background: linear-gradient(135deg, #1b2838, #2a475e); box-shadow: 0 8px 20px -6px rgba(27, 40, 56, 0.6); border: 1px solid #66c0f4; }
         .btn-donate { background: linear-gradient(135deg, #f7b733, #fc4a1a); box-shadow: 0 8px 20px -6px rgba(252, 74, 26, 0.5); }
-        .player-section {
+
+        /* Секция стрима + чата */
+        .stream-section {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
+            width: 100%;
+        }
+        .player-section, .chat-section {
             background: var(--panel-bg);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-radius: 28px; border: 1px solid var(--panel-border);
             padding: 1.5rem;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
         }
-        .player-section h2 {
+        .player-section h2, .chat-section h2 {
             font-size: 1.2rem; font-weight: 600; color: var(--text);
             margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;
         }
@@ -172,8 +182,28 @@
             position: relative; width: 100%; aspect-ratio: 16 / 9;
             border-radius: 16px; overflow: hidden; background: #000;
             box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8);
+            flex: 1;
         }
         #twitch-embed { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+        /* Чат */
+        .chat-wrapper {
+            flex: 1;
+            min-height: 400px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #18181b;
+            position: relative;
+        }
+        .chat-wrapper iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Свиток */
         .scroll-modal {
             position: fixed; inset: 0;
             background: rgba(0, 0, 0, 0.6);
@@ -281,6 +311,8 @@
             font-family: inherit; line-height: 1;
         }
         .scroll-close:hover { background: rgba(255, 255, 255, 0.7); transform: rotate(90deg); }
+
+        /* Перетаскиваемая панель */
         .free-overlay {
             position: fixed; top: 100px; left: 20px; width: 280px;
             max-width: calc(100vw - 24px);
@@ -308,6 +340,16 @@
         }
         .free-overlay .overlay-content { font-size: 0.85rem; color: var(--text-soft); line-height: 1.5; }
         .free-overlay .overlay-content .highlight { color: var(--twitch-purple); font-weight: 600; }
+
+        /* Адаптация */
+        @media (max-width: 900px) {
+            .stream-section {
+                grid-template-columns: 1fr;
+            }
+            .chat-wrapper {
+                min-height: 350px;
+            }
+        }
         @media (max-width: 600px) {
             body { padding: 12px; padding-top: max(12px, env(safe-area-inset-top)); }
             .main-container { margin-top: 55px; gap: 14px; }
@@ -320,7 +362,8 @@
             .stat-card .value { font-size: 1.2rem; }
             .action-buttons { grid-template-columns: 1fr 1fr; gap: 8px; }
             .action-btn { padding: 12px 10px; font-size: 0.8rem; min-height: 46px; }
-            .player-section { padding: 1rem; border-radius: 22px; }
+            .player-section, .chat-section { padding: 1rem; border-radius: 22px; }
+            .chat-wrapper { min-height: 300px; }
             .free-overlay { width: calc(100vw - 24px); max-width: 300px; padding: 1rem; }
             .scroll-content { padding: 2rem 1.2rem 1.8rem; }
             .scroll-rod { width: 26px; border-radius: 13px; }
@@ -395,10 +438,26 @@
             </div>
         </div>
 
-        <div class="player-section">
-            <h2><span>📺</span> Прямой эфир</h2>
-            <div class="player-wrapper">
-                <div id="twitch-embed"></div>
+        <!-- Плеер + чат -->
+        <div class="stream-section">
+            <div class="player-section">
+                <h2><span>📺</span> Прямой эфир</h2>
+                <div class="player-wrapper">
+                    <div id="twitch-embed"></div>
+                </div>
+            </div>
+
+            <div class="chat-section">
+                <h2><span>💬</span> Чат</h2>
+                <div class="chat-wrapper">
+                    <iframe
+                        id="twitch-chat"
+                        src="https://www.twitch.tv/embed/ruslaanchik/chat?parent=mrdeadmaus5king.github.io&parent=localhost&darkpopout"
+                        frameborder="0"
+                        scrolling="no"
+                        allowfullscreen>
+                    </iframe>
+                </div>
             </div>
         </div>
     </div>
@@ -598,4 +657,4 @@
         })();
     </script>
 </body>
-    </html>
+        </html>
