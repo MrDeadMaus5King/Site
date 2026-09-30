@@ -48,7 +48,7 @@
             padding: 10px 18px; border-radius: 30px;
             border: 1px solid rgba(255, 255, 255, 0.15);
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
             color: #fff; font-size: 0.9rem; font-weight: 500;
             font-family: inherit; cursor: pointer; text-decoration: none;
             transition: background 0.2s, transform 0.15s; min-height: 44px;
@@ -79,6 +79,70 @@
             50% { transform: scaleY(1); }
         }
         .music-control.paused .wave span { animation-play-state: paused; opacity: 0.3; }
+
+        /* ===================== ЭКРАН "ВКЛЮЧИТЬ МУЗЫКУ" ===================== */
+        .music-intro {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(10, 10, 20, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 24px; padding: 24px; text-align: center;
+            transition: opacity 0.6s ease, visibility 0.6s;
+            cursor: pointer;
+        }
+        .music-intro.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .music-intro .note {
+            font-size: 5rem;
+            animation: bounce 1.5s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(145, 70, 255, 0.8));
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+        .music-intro h2 {
+            font-size: clamp(1.3rem, 5.5vw, 1.8rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #9146ff, #6ec6a0);
+            background-size: 200% 200%;
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            animation: gradientMove 4s ease infinite;
+            line-height: 1.3;
+        }
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .music-intro p {
+            color: #b8c7dd; font-size: 0.95rem; line-height: 1.6;
+            max-width: 320px;
+        }
+        .music-intro .play-hint {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 16px 32px; border-radius: 50px;
+            background: linear-gradient(135deg, #9146ff, #6ec6a0);
+            color: #fff; font-size: 1rem; font-weight: 700;
+            box-shadow: 0 15px 40px -10px rgba(145, 70, 255, 0.7);
+            animation: pulse-btn 2s ease-in-out infinite;
+            margin-top: 8px;
+        }
+        @keyframes pulse-btn {
+            0%, 100% { transform: scale(1); box-shadow: 0 15px 40px -10px rgba(145, 70, 255, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 20px 50px -10px rgba(110, 198, 160, 0.9); }
+        }
+        .music-intro .skip {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #6b7a94;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
         .scroll-progress {
             position: fixed; top: 0; left: 0; height: 3px;
             background: linear-gradient(90deg, #9146ff, #6ec6a0, #9146ff);
@@ -104,10 +168,6 @@
             -webkit-background-clip: text; background-clip: text; color: transparent;
             animation: gradientMove 4s ease infinite;
             margin-bottom: 1.5rem; letter-spacing: -0.02em;
-        }
-        @keyframes gradientMove {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
         }
         .title-section .subtitle {
             font-size: clamp(1rem, 4vw, 1.3rem);
@@ -251,6 +311,7 @@
             .creator-avatar-big { width: 110px; height: 110px; font-size: 3rem; }
             .top-bar { padding: 10px 12px; }
             .back-btn, .music-control { padding: 8px 12px; font-size: 0.8rem; min-height: 40px; }
+            .music-intro .note { font-size: 4rem; }
         }
     </style>
 </head>
@@ -258,6 +319,18 @@
     <div class="bg-gradient"></div>
     <div class="stars" id="stars"></div>
     <div class="scroll-progress" id="progressBar"></div>
+
+    <!-- ЭКРАН ВКЛЮЧЕНИЯ МУЗЫКИ -->
+    <div class="music-intro" id="musicIntro">
+        <div class="note">🎵</div>
+        <h2>Мы подготовили<br>атмосферу для тебя</h2>
+        <p>Включи музыку, чтобы погрузиться в историю создания сайта. Это трек <strong>We Were Set Up</strong> из GTA V.</p>
+        <div class="play-hint">
+            <span>▶</span>
+            <span>Включить музыку</span>
+        </div>
+        <div class="skip" id="skipMusic">Продолжить без звука →</div>
+    </div>
 
     <div class="top-bar">
         <a href="index.html" class="back-btn">
@@ -390,10 +463,13 @@
             }
         })();
 
-        // Музыка
+        // ===================== МУЗЫКА =====================
         const bgMusic = document.getElementById('bgMusic');
         const musicBtn = document.getElementById('musicBtn');
         const musicLabel = document.getElementById('musicLabel');
+        const musicIntro = document.getElementById('musicIntro');
+        const skipMusic = document.getElementById('skipMusic');
+
         bgMusic.volume = 0.35;
 
         function updateMusicUI(playing) {
@@ -406,21 +482,35 @@
             }
         }
 
-        function tryPlay() {
-            bgMusic.play().then(() => updateMusicUI(true)).catch(() => updateMusicUI(false));
-        }
+        // Клик по интро-экрану — запускаем музыку и скрываем
+        musicIntro.addEventListener('click', (e) => {
+            // Если тапнули на "Продолжить без звука" — просто скрываем
+            if (e.target === skipMusic) {
+                musicIntro.classList.add('hidden');
+                updateMusicUI(false);
+                return;
+            }
 
-        ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
-            document.addEventListener(evt, function once() {
-                if (bgMusic.paused) {
-                    bgMusic.play().then(() => updateMusicUI(true)).catch(() => {});
-                }
-                document.removeEventListener(evt, once);
-            }, { once: true, passive: true });
+            // Запускаем музыку
+            bgMusic.play().then(() => {
+                updateMusicUI(true);
+                musicIntro.classList.add('hidden');
+            }).catch(err => {
+                console.error('Ошибка:', err);
+                // Если не удалось — просто скрываем
+                musicIntro.classList.add('hidden');
+                updateMusicUI(false);
+            });
         });
 
-        tryPlay();
+        // Отдельный обработчик для "Продолжить без звука"
+        skipMusic.addEventListener('click', (e) => {
+            e.stopPropagation();
+            musicIntro.classList.add('hidden');
+            updateMusicUI(false);
+        });
 
+        // Кнопка вкл/выкл музыки вверху
         musicBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             if (bgMusic.paused) {
@@ -431,7 +521,7 @@
             }
         });
 
-        // Автоскролл
+        // ===================== АВТОСКРОЛЛ =====================
         const autoScrollBtn = document.getElementById('autoScrollBtn');
         const scrollHint = document.getElementById('scrollHint');
         const progressBar = document.getElementById('progressBar');
@@ -474,7 +564,7 @@
 
         ['wheel', 'touchmove', 'mousedown', 'keydown'].forEach(evt => {
             document.addEventListener(evt, (e) => {
-                if (e.target.closest('.top-bar') || e.target.closest('.auto-scroll-toggle')) return;
+                if (e.target.closest('.top-bar') || e.target.closest('.auto-scroll-toggle') || e.target.closest('.music-intro')) return;
                 userPausedUntil = Date.now() + 3000;
             }, { passive: true });
         });
@@ -501,4 +591,4 @@
         setTimeout(() => { document.querySelectorAll('.section')[0]?.classList.add('visible'); }, 100);
     </script>
 </body>
-  </html>
+                            </html>
