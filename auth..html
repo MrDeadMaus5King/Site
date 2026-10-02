@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a14">
+    <title>Вход — Ruslaanchik</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: radial-gradient(ellipse at 50% 50%, #1a1f35 0%, #0a0a14 100%);
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .auth-container {
+            width: 100%; max-width: 420px;
+            background: rgba(18, 28, 40, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            padding: 2rem 1.8rem;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .auth-header { text-align: center; margin-bottom: 1.5rem; }
+        .auth-logo {
+            font-size: 3.5rem; margin-bottom: 0.5rem;
+            animation: rotate 3s ease-in-out infinite;
+            display: inline-block;
+        }
+        @keyframes rotate {
+            0%, 100% { transform: rotate(-10deg) scale(1); }
+            50% { transform: rotate(10deg) scale(1.1); }
+        }
+        .auth-title {
+            font-size: 1.6rem; font-weight: 900;
+            background: linear-gradient(135deg, #fff, #9146ff, #6ec6a0);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            margin-bottom: 0.3rem;
+        }
+        .auth-subtitle { font-size: 0.85rem; color: #8da2c0; }
+
+        .tabs {
+            display: flex; gap: 8px; margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px; padding: 5px;
+        }
+        .tab {
+            flex: 1; padding: 10px; border-radius: 12px; border: none;
+            background: transparent; color: #8da2c0;
+            font-family: inherit; font-size: 0.9rem; font-weight: 700;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .tab.active {
+            background: linear-gradient(135deg, #9146ff, #6ec6a0);
+            color: #fff;
+            box-shadow: 0 8px 20px -6px rgba(145, 70, 255, 0.6);
+        }
+
+        .form-group { margin-bottom: 12px; }
+        .form-label {
+            display: block; font-size: 0.72rem;
+            text-transform: uppercase; letter-spacing: 1px;
+            color: #8da2c0; font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .form-input {
+            width: 100%; padding: 14px 18px;
+            border-radius: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff; font-size: 1rem; font-family: inherit;
+            outline: none; transition: border-color 0.2s;
+            -webkit-appearance: none;
+        }
+        .form-input:focus { border-color: #9146ff; }
+        .form-input::placeholder { color: #5a6b85; }
+
+        .error-msg {
+            display: none;
+            background: rgba(255, 68, 68, 0.15);
+            border: 1px solid rgba(255, 68, 68, 0.4);
+            color: #ff8888;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .error-msg.show { display: block; animation: shake 0.3s; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        .submit-btn {
+            width: 100%; padding: 16px;
+            border-radius: 16px; border: none;
+            background: linear-gradient(135deg, #9146ff, #6ec6a0);
+            color: #fff; font-size: 1rem; font-weight: 800;
+            font-family: inherit; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 2px;
+            transition: transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 12px 30px -8px rgba(145, 70, 255, 0.6);
+            margin-top: 8px;
+        }
+        .submit-btn:hover { transform: translateY(-2px); }
+        .submit-btn:active { transform: scale(0.98); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .loading {
+            display: inline-block; width: 16px; height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px; vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .back-link {
+            display: block; text-align: center;
+            margin-top: 1.2rem;
+            color: #8da2c0; font-size: 0.85rem;
+            text-decoration: none; transition: color 0.2s;
+        }
+        .back-link:hover { color: #fff; }
+
+        .success-msg {
+            display: none;
+            background: rgba(110, 198, 160, 0.15);
+            border: 1px solid rgba(110, 198, 160, 0.4);
+            color: #a8e6cf;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .success-msg.show { display: block; }
+
+        .hint { font-size: 0.72rem; color: #6b7a94; margin-top: 6px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="auth-logo">🎮</div>
+            <div class="auth-title">Ruslaanchik</div>
+            <div class="auth-subtitle">Войди, чтобы играть и попасть в топ</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" id="loginTab">Вход</button>
+            <button class="tab" id="registerTab">Регистрация</button>
+        </div>
+
+        <div class="error-msg" id="errorMsg"></div>
+        <div class="success-msg" id="successMsg"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label">Ник</label>
+                <input type="text" class="form-input" id="loginNick" placeholder="Твой ник" maxlength="20" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Пароль</label>
+                <input type="password" class="form-input" id="loginPassword" placeholder="Пароль" autocomplete="current-password">
+            </div>
+            <button type="submit" class="submit-btn" id="loginBtn">Войти</button>
+        </form>
+
+        <form id="registerForm" style="display: none;">
+            <div class="form-group">
+                <label class="form-label">Ник</label>
+                <input type="text" class="form-input" id="regNick" placeholder="Придумай ник" maxlength="20" autocomplete="username">
+                <div class="hint">Только буквы, цифры и _ (от 3 до 20 символов)</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Пароль</label>
+                <input type="password" class="form-input" id="regPassword" placeholder="Минимум 6 символов" autocomplete="new-password">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Повтори пароль</label>
+                <input type="password" class="form-input" id="regPassword2" placeholder="Повтори пароль" autocomplete="new-password">
+            </div>
+            <button type="submit" class="submit-btn" id="registerBtn">Зарегистрироваться</button>
+        </form>
+
+        <a href="index.html" class="back-link">← На главную</a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBJhK6WR2N3e0SYf5TMLiwloRWTvWHeYTg",
+            authDomain: "ruslaanchik-4e266.firebaseapp.com",
+            databaseURL: "https://ruslaanchik-4e266-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "ruslaanchik-4e266",
+            storageBucket: "ruslaanchik-4e266.firebasestorage.app",
+            messagingSenderId: "218938988831",
+            appId: "1:218938988831:web:9a779ff712c63852fe782a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        const emailDomain = 'ruslaanchik.local';
+
+        function nickToEmail(nick) {
+            return nick.toLowerCase().trim() + '@' + emailDomain;
+        }
+
+        function validateNick(nick) {
+            if (!nick || nick.length < 3) return 'Ник должен быть минимум 3 символа';
+            if (nick.length > 20) return 'Ник максимум 20 символов';
+            if (!/^[a-zA-Z0-9_а-яА-ЯёЁ]+$/.test(nick)) return 'Только буквы, цифры и _';
+            return null;
+        }
+
+        function validatePassword(pwd) {
+            if (!pwd || pwd.length < 6) return 'Пароль минимум 6 символов';
+            return null;
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 5000);
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('successMsg');
+            el.textContent = msg;
+            el.classList.add('show');
+        }
+
+        function setLoading(btn, loading, text) {
+            if (loading) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading"></span>Подожди...';
+            } else {
+                btn.disabled = false;
+                btn.textContent = text;
+            }
+        }
+
+        // Табы
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+        });
+
+        registerTab.addEventListener('click', () => {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.style.display = 'block';
+            loginForm.style.display = 'none';
+        });
+
+        // РЕГИСТРАЦИЯ
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nick = document.getElementById('regNick').value.trim();
+            const pwd = document.getElementById('regPassword').value;
+            const pwd2 = document.getElementById('regPassword2').value;
+
+            const nickErr = validateNick(nick);
+            if (nickErr) return showError(nickErr);
+            const pwdErr = validatePassword(pwd);
+            if (pwdErr) return showError(pwdErr);
+            if (pwd !== pwd2) return showError('Пароли не совпадают');
+
+            const btn = document.getElementById('registerBtn');
+            setLoading(btn, true);
+
+            try {
+                const email = nickToEmail(nick);
+                const cred = await createUserWithEmailAndPassword(auth, email, pwd);
+                await updateProfile(cred.user, { displayName: nick });
+                await set(ref(db, 'users/' + cred.user.uid), {
+                    nick: nick,
+                    createdAt: Date.now(),
+                    bestScore: 0
+                });
+
+                showSuccess('Аккаунт создан! Заходим...');
+                setTimeout(() => window.location.href = 'aim.html', 1200);
+            } catch (err) {
+                console.error(err);
+                if (err.code === 'auth/email-already-in-use') showError('Этот ник уже занят');
+                else if (err.code === 'auth/weak-password') showError('Пароль слишком слабый');
+                else showError('Ошибка: ' + err.message);
+                setLoading(btn, false, 'Зарегистрироваться');
+            }
+        });
+
+        // ВХОД
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nick = document.getElementById('loginNick').value.trim();
+            const pwd = document.getElementById('loginPassword').value;
+
+            if (!nick || !pwd) return showError('Введи ник и пароль');
+
+            const btn = document.getElementById('loginBtn');
+            setLoading(btn, true);
+
+            try {
+                const email = nickToEmail(nick);
+                await signInWithEmailAndPassword(auth, email, pwd);
+                showSuccess('Вошёл! Заходим...');
+                setTimeout(() => window.location.href = 'aim.html', 800);
+            } catch (err) {
+                console.error(err);
+                if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                    showError('Неверный ник или пароль');
+                } else {
+                    showError('Ошибка: ' + err.message);
+                }
+                setLoading(btn, false, 'Войти');
+            }
+        });
+
+        // Автопереход если уже вошёл
+        onAuthStateChanged(auth, (user) => {
+            if (user) window.location.href = 'aim.html';
+        });
+    </script>
+</body>
+</html>
