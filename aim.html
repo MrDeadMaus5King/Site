@@ -29,7 +29,10 @@
         @keyframes hitAnim { 0% { transform: scale(1); opacity: 1; background: #ffaa00; } 100% { transform: scale(1.6); opacity: 0; } }
         .target::before { content: ''; position: absolute; inset: 20%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #ff6666 100%); }
         .target.small { width: 55px !important; height: 55px !important; }
+        .target.tiny { width: 40px !important; height: 40px !important; }
         .target.grid { border-radius: 20%; }
+        .target.speed { animation: pop 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), fadeOut 1s ease-out forwards 1s; }
+        @keyframes fadeOut { to { opacity: 0; transform: scale(0.5); } }
 
         .hit-particle { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #ffaa00; pointer-events: none; animation: particleFly 0.6s ease-out forwards; }
         @keyframes particleFly { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
@@ -57,8 +60,8 @@
 
         .section-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: #8da2c0; font-weight: 700; margin-top: 4px; margin-bottom: -6px; }
 
-        .mode-buttons { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 520px; }
-        .mode-btn { padding: 9px 15px; border-radius: 50px; border: 2px solid rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.05); color: #fff; font-size: 0.82rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+        .mode-buttons { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 560px; }
+        .mode-btn { padding: 9px 15px; border-radius: 50px; border: 2px solid rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.05); color: #fff; font-size: 0.8rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
         .mode-btn.selected { background: linear-gradient(135deg, #9146ff, #6ec6a0); border-color: transparent; box-shadow: 0 10px 30px -5px rgba(145, 70, 255, 0.6); }
 
         .play-btn { padding: 14px 40px; border-radius: 50px; border: none; background: linear-gradient(135deg, #9146ff, #6ec6a0); color: #fff; font-size: 1.05rem; font-weight: 800; font-family: inherit; cursor: pointer; box-shadow: 0 15px 40px -10px rgba(145, 70, 255, 0.7); text-transform: uppercase; letter-spacing: 2px; animation: pulse-btn 2s ease-in-out infinite; margin-top: 4px; }
@@ -84,7 +87,11 @@
         .rank-badge.captain { border-color: #9146ff; color: #c2a4ff; background: rgba(145, 70, 255, 0.15); }
         .rank-badge.starlord { border-color: #ffaa00; color: #ffcc55; background: rgba(255, 170, 0, 0.15); }
         .rank-badge.lasermaster { border-color: #ff4444; color: #ff8888; background: rgba(255, 68, 68, 0.15); animation: rankPop 0.6s, rankGlow 2s ease-in-out infinite 0.6s; }
+        .rank-badge.grandmaster { border-color: #c832dc; color: #e088ff; background: rgba(200, 50, 220, 0.15); animation: rankPop 0.6s, rankGlow2 2s ease-in-out infinite 0.6s; }
+        .rank-badge.legend { border-color: #ffcc00; color: #ffdd44; background: rgba(255, 200, 0, 0.15); animation: rankPop 0.6s, rankGlow2 2s ease-in-out infinite 0.6s; }
+        .rank-badge.mythic { border: 2px solid #ff4444; color: #fff; background: linear-gradient(135deg, rgba(255, 68, 68, 0.3), rgba(145, 70, 255, 0.3)); animation: rankPop 0.6s, rankGlow2 1.5s ease-in-out infinite 0.6s; }
         @keyframes rankGlow { 0%, 100% { box-shadow: 0 0 20px rgba(255, 68, 68, 0.4); } 50% { box-shadow: 0 0 40px rgba(255, 68, 68, 0.8); } }
+        @keyframes rankGlow2 { 0%, 100% { box-shadow: 0 0 20px rgba(255, 200, 0, 0.5); } 50% { box-shadow: 0 0 40px rgba(255, 200, 0, 0.9); } }
 
         .achievements-list { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 480px; }
         .achievement { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; background: linear-gradient(135deg, rgba(255, 170, 0, 0.15), rgba(255, 68, 68, 0.15)); border: 1px solid rgba(255, 170, 0, 0.4); font-size: 0.78rem; font-weight: 700; color: #ffcc55; animation: achPop 0.5s ease-out; }
@@ -118,6 +125,9 @@
         .lb-rank-tag.captain { background: rgba(145, 70, 255, 0.2); color: #c2a4ff; }
         .lb-rank-tag.starlord { background: rgba(255, 170, 0, 0.2); color: #ffcc55; }
         .lb-rank-tag.lasermaster { background: rgba(255, 68, 68, 0.2); color: #ff8888; }
+        .lb-rank-tag.grandmaster { background: rgba(200, 50, 220, 0.2); color: #e088ff; }
+        .lb-rank-tag.legend { background: rgba(255, 200, 0, 0.2); color: #ffdd44; }
+        .lb-rank-tag.mythic { background: linear-gradient(135deg, rgba(255, 68, 68, 0.3), rgba(145, 70, 255, 0.3)); color: #fff; }
         .lb-score { font-size: 0.82rem; font-weight: 700; color: #6ec6a0; padding: 3px 8px; border-radius: 10px; background: rgba(110, 198, 160, 0.1); }
 
         .tracking-target { position: absolute; width: 70px; height: 70px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #6ec6a0, #3a8b6e 60%, #1a4738 100%); border: 4px solid #fff; box-shadow: 0 0 30px rgba(110, 198, 160, 0.8); cursor: crosshair; pointer-events: none; }
@@ -125,6 +135,7 @@
         @media (max-width: 600px) {
             .target { width: 70px; height: 70px; }
             .target.small { width: 44px !important; height: 44px !important; }
+            .target.tiny { width: 34px !important; height: 34px !important; }
             .hud-item { min-width: 38px; }
             .hud-value { font-size: 0.85rem; }
             .hud { padding: 6px 8px; gap: 5px; }
@@ -132,7 +143,7 @@
             .user-badge { padding: 8px 12px; font-size: 0.75rem; min-height: 40px; max-width: 120px; }
             .result-stats { grid-template-columns: repeat(3, 1fr); gap: 6px; }
             .result-stat .value { font-size: 1.1rem; }
-            .mode-btn { padding: 8px 12px; font-size: 0.75rem; }
+            .mode-btn { padding: 7px 11px; font-size: 0.72rem; }
             .rank-badge { padding: 10px 18px; font-size: 0.9rem; }
         }
     </style>
@@ -173,7 +184,7 @@
     <div class="overlay" id="startScreen">
         <div class="crosshair-icon">🎯</div>
         <h1>Aim Trainer</h1>
-        <p>Тренируй реакцию и меткость в 4 режимах!</p>
+        <p>Тренируй реакцию и меткость в 8 режимах!</p>
 
         <div class="player-name" id="playerNameDisplay">
             <span>👤</span>
@@ -191,6 +202,10 @@
             <button class="mode-btn" data-mode="gridshot">🔲 Gridshot</button>
             <button class="mode-btn" data-mode="flick">⚡ Flick</button>
             <button class="mode-btn" data-mode="tracking">🟢 Tracking</button>
+            <button class="mode-btn" data-mode="speed">💨 Speed</button>
+            <button class="mode-btn" data-mode="precision">🎯 Precision</button>
+            <button class="mode-btn" data-mode="reaction">🏎️ Reaction</button>
+            <button class="mode-btn" data-mode="endurance">🔥 Endurance</button>
         </div>
 
         <div class="section-title">⏱️ Время</div>
@@ -254,6 +269,7 @@
 
         <div class="result-buttons">
             <button class="btn-again" id="againBtn">🔄 Ещё раз</button>
+            <a href="profile.html" class="btn-menu">👤 Профиль</a>
             <a href="index.html" class="btn-menu">🏠 В меню</a>
         </div>
 
@@ -287,15 +303,11 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // ===================== АВТОРИЗАЦИЯ =====================
         let currentUser = null;
         let currentNick = '';
 
         onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                window.location.href = 'auth.html';
-                return;
-            }
+            if (!user) { window.location.href = 'auth.html'; return; }
             currentUser = user;
             currentNick = user.displayName || user.email.split('@')[0];
 
@@ -314,14 +326,16 @@
             }
         });
 
-        // ===================== РАНГИ =====================
         const RANKS = [
             { name: 'Recruit', min: 0, max: 1000, icon: '🎖️' },
             { name: 'Gunner', min: 1000, max: 3000, icon: '🔫' },
             { name: 'Trooper', min: 3000, max: 5000, icon: '⚔️' },
             { name: 'Captain', min: 5000, max: 8000, icon: '🎯' },
             { name: 'Starlord', min: 8000, max: 12000, icon: '💠' },
-            { name: 'Lasermaster', min: 12000, max: Infinity, icon: '👑' }
+            { name: 'Lasermaster', min: 12000, max: 15000, icon: '👑' },
+            { name: 'Grandmaster', min: 15000, max: 20000, icon: '💫' },
+            { name: 'Legend', min: 20000, max: 25000, icon: '⚡' },
+            { name: 'Mythic', min: 25000, max: Infinity, icon: '🌟' }
         ];
 
         function getRank(score) {
@@ -332,7 +346,6 @@
         }
         function getRankKey(name) { return name.toLowerCase(); }
 
-        // ===================== ДОСТИЖЕНИЯ =====================
         const ACHIEVEMENTS = [
             { id: 'sniper', name: 'Снайпер', icon: '🎯', check: (s) => s.accuracy >= 90 },
             { id: 'combo_master', name: 'Комбо-мастер', icon: '🔥', check: (s) => s.maxCombo >= 10 },
@@ -344,7 +357,6 @@
             { id: 'tracking_king', name: 'Трекер', icon: '🟢', check: (s) => s.mode === 'tracking' && s.score >= 3000 }
         ];
 
-        // ===================== ЛИДЕРБОРД =====================
         const scoresRef = query(ref(db, 'scores'), orderByChild('timestamp'), limitToLast(100));
 
         function escapeHtml(str) {
@@ -354,7 +366,12 @@
 
         function renderLeaderboard(scores) {
             const lists = [document.getElementById('leaderboard'), document.getElementById('leaderboard2')];
-            const sorted = scores.sort((a, b) => b.score - a.score || b.timestamp - a.timestamp).slice(0, 15);
+            const validScores = scores.filter(s => s && s.uid && s.score && s.name);
+            const byUid = {};
+            validScores.forEach(s => {
+                if (!byUid[s.uid] || s.score > byUid[s.uid].score) byUid[s.uid] = s;
+            });
+            const sorted = Object.values(byUid).sort((a, b) => b.score - a.score || b.timestamp - a.timestamp).slice(0, 15);
 
             if (!sorted.length) {
                 lists.forEach(el => { if (el) el.innerHTML = '<div class="lb-empty">Пока никто не играл. Будь первым! 🎯</div>'; });
@@ -383,25 +400,25 @@
             renderLeaderboard(data ? Object.values(data) : []);
         });
 
-        // ===================== СОХРАНЕНИЕ (1 игрок = 1 запись) =====================
-        async function saveScore(score, mode) {
+        async function saveScore(score, mode, accuracy, hits, maxCombo, bestReaction) {
             if (!currentUser) return { saved: false, isRecord: false };
             try {
                 const uid = currentUser.uid;
                 const scoreRef = ref(db, 'scores/' + uid);
-
-                // Получаем текущий рекорд
                 const snapshot = await get(scoreRef);
                 const oldData = snapshot.val();
                 const oldScore = oldData ? oldData.score : 0;
 
-                // Обновляем ТОЛЬКО если новый счёт больше
                 if (score > oldScore) {
                     await set(scoreRef, {
                         uid: uid,
                         name: currentNick.slice(0, 20),
-                        score: Math.min(score, 20000),
+                        score: Math.min(score, 30000),
                         mode: mode || 'classic',
+                        accuracy: accuracy || 0,
+                        hits: hits || 0,
+                        maxCombo: maxCombo || 0,
+                        bestReaction: Math.round(bestReaction) || 0,
                         timestamp: Date.now()
                     });
                     return { saved: true, isRecord: true };
@@ -413,7 +430,6 @@
             }
         }
 
-        // ===================== СОСТОЯНИЕ =====================
         const gameArea = document.getElementById('gameArea');
         const hud = document.getElementById('hud');
         const hudTime = document.getElementById('hudTime');
@@ -444,7 +460,8 @@
             timeLeft: 30, timerInterval: null, spawnTime: 0,
             reactionTimes: [], bestReaction: 0, currentTarget: null,
             trackingRaf: null, trackingTarget: null,
-            trackingDir: { x: 2, y: 2 }, trackingPos: { x: 100, y: 100 }
+            trackingDir: { x: 2, y: 2 }, trackingPos: { x: 100, y: 100 },
+            targetTimeout: null
         };
 
         const BEST_KEY = 'aim_best_score';
@@ -482,7 +499,7 @@
             state.playing = true;
             state.score = 0; state.hits = 0; state.misses = 0;
             state.combo = 0; state.maxCombo = 0;
-            state.timeLeft = state.duration;
+            state.timeLeft = state.mode === 'endurance' ? 180 : state.duration;
             state.reactionTimes = []; state.bestReaction = 0;
 
             gameArea.innerHTML = '';
@@ -520,6 +537,7 @@
         function spawnTarget() {
             if (!state.playing) return;
             if (state.currentTarget) state.currentTarget.remove();
+            if (state.targetTimeout) clearTimeout(state.targetTimeout);
 
             const isMobile = window.innerWidth < 600;
             let size = isMobile ? 70 : 90;
@@ -539,6 +557,24 @@
                 size = isMobile ? 50 : 65;
                 extraClass = 'small';
                 posX = Math.random() * (window.innerWidth - size - 80) + 40;
+                posY = Math.random() * (window.innerHeight - size - 200) + 120;
+            } else if (state.mode === 'speed') {
+                size = isMobile ? 60 : 75;
+                extraClass = 'speed';
+                posX = Math.random() * (window.innerWidth - size - 40) + 20;
+                posY = Math.random() * (window.innerHeight - size - 200) + 120;
+            } else if (state.mode === 'precision') {
+                size = isMobile ? 35 : 45;
+                extraClass = 'tiny';
+                posX = Math.random() * (window.innerWidth - size - 80) + 40;
+                posY = Math.random() * (window.innerHeight - size - 200) + 120;
+            } else if (state.mode === 'reaction') {
+                size = isMobile ? 70 : 90;
+                posX = Math.random() * (window.innerWidth - size - 80) + 40;
+                posY = Math.random() * (window.innerHeight - size - 200) + 120;
+            } else if (state.mode === 'endurance') {
+                size = isMobile ? 55 : 70;
+                posX = Math.random() * (window.innerWidth - size - 40) + 20;
                 posY = Math.random() * (window.innerHeight - size - 200) + 120;
             } else {
                 posX = Math.random() * (window.innerWidth - size - 40) + 20;
@@ -583,7 +619,10 @@
             if (state.combo > state.maxCombo) state.maxCombo = state.combo;
 
             const comboBonus = Math.min(state.combo - 1, 10) * 10;
-            const points = 100 + comboBonus;
+            let basePoints = 100;
+            if (state.mode === 'precision') basePoints = 200;
+            if (state.mode === 'speed') basePoints = 80;
+            const points = basePoints + comboBonus;
             state.score += points;
 
             const popup = document.createElement('div');
@@ -714,7 +753,7 @@
             saveStatus.textContent = 'Сохраняю в топ...';
             saveStatus.style.color = '#8da2c0';
 
-            const result = await saveScore(state.score, state.mode);
+            const result = await saveScore(state.score, state.mode, accuracy, state.hits, state.maxCombo, state.bestReaction);
             if (result.saved && result.isRecord) {
                 saveStatus.textContent = '🏆 Новый рекорд! Сохранено!';
                 saveStatus.style.color = '#ffaa00';
@@ -752,4 +791,4 @@
         });
     </script>
 </body>
-    </html>
+</html>
