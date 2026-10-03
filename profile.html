@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a14">
+    <title>Профиль — Ruslaanchik</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+        html, body { min-height: 100%; overscroll-behavior: none; }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: radial-gradient(ellipse at 50% 50%, #1a1f35 0%, #0a0a14 100%);
+            color: #fff;
+            padding: 20px;
+            padding-top: max(70px, env(safe-area-inset-top));
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 12px 16px;
+            padding-top: max(12px, env(safe-area-inset-top));
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(10, 10, 20, 0.95), transparent);
+        }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 18px; border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            color: #fff; font-size: 0.9rem; font-weight: 500;
+            font-family: inherit; text-decoration: none; cursor: pointer;
+            min-height: 44px;
+        }
+        .logout-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 18px; border-radius: 30px;
+            border: 1px solid rgba(255, 68, 68, 0.4);
+            background: rgba(255, 68, 68, 0.1);
+            backdrop-filter: blur(16px);
+            color: #ff8888; font-size: 0.9rem; font-weight: 600;
+            font-family: inherit; cursor: pointer;
+            min-height: 44px;
+        }
+
+        .container { max-width: 600px; width: 100%; display: flex; flex-direction: column; gap: 16px; }
+
+        /* Карточка профиля */
+        .profile-header {
+            background: linear-gradient(135deg, rgba(145, 70, 255, 0.15), rgba(110, 198, 160, 0.15));
+            border: 1px solid rgba(145, 70, 255, 0.4);
+            border-radius: 28px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .profile-header::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, #9146ff, #6ec6a0, #9146ff);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .avatar-big {
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #9146ff, #6ec6a0);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3.5rem;
+            margin: 0 auto 1rem;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 40px rgba(145, 70, 255, 0.5);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .avatar-big:hover { transform: scale(1.05); }
+        .avatar-big:active { transform: scale(0.95); }
+
+        .profile-nick {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #c2a4ff);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-rank {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 18px; border-radius: 30px;
+            font-size: 0.9rem; font-weight: 800;
+            letter-spacing: 1px;
+        }
+        .profile-rank.recruit { background: rgba(139, 111, 71, 0.2); color: #c9a678; border: 1px solid #8b6f47; }
+        .profile-rank.gunner { background: rgba(168, 168, 168, 0.2); color: #e0e0e0; border: 1px solid #a8a8a8; }
+        .profile-rank.trooper { background: rgba(74, 144, 226, 0.2); color: #7fb8ff; border: 1px solid #4a90e2; }
+        .profile-rank.captain { background: rgba(145, 70, 255, 0.2); color: #c2a4ff; border: 1px solid #9146ff; }
+        .profile-rank.starlord { background: rgba(255, 170, 0, 0.2); color: #ffcc55; border: 1px solid #ffaa00; }
+        .profile-rank.lasermaster { background: rgba(255, 68, 68, 0.2); color: #ff8888; border: 1px solid #ff4444; }
+        .profile-rank.grandmaster { background: rgba(200, 50, 220, 0.2); color: #e088ff; border: 1px solid #c832dc; animation: rankPulse 2s ease-in-out infinite; }
+        .profile-rank.legend { background: rgba(255, 200, 0, 0.2); color: #ffdd44; border: 1px solid #ffcc00; animation: rankPulse 2s ease-in-out infinite; }
+        .profile-rank.mythic { background: linear-gradient(135deg, rgba(255, 68, 68, 0.3), rgba(145, 70, 255, 0.3)); color: #fff; border: 2px solid #ff4444; animation: rankPulse 1.5s ease-in-out infinite; }
+        @keyframes rankPulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 200, 0, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(255, 200, 0, 0.8); }
+        }
+
+        /* Статистика */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-card .value {
+            font-size: 1.6rem; font-weight: 800;
+            color: #a7c8ff;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        .stat-card .value.gold { color: #ffaa00; }
+        .stat-card .value.green { color: #6ec6a0; }
+        .stat-card .value.purple { color: #c2a4ff; }
+        .stat-card .value.pink { color: #ff8888; }
+        .stat-card .label {
+            font-size: 0.65rem; text-transform: uppercase;
+            letter-spacing: 1px; color: #8da2c0;
+            margin-top: 6px; font-weight: 600;
+        }
+
+        /* Секция */
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 22px;
+            padding: 1.3rem;
+        }
+        .section-title {
+            font-size: 1rem; font-weight: 700;
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Достижения */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+        .achievement-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 12px 8px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .achievement-card.unlocked {
+            background: linear-gradient(135deg, rgba(255, 170, 0, 0.15), rgba(255, 68, 68, 0.15));
+            border: 1px solid rgba(255, 170, 0, 0.5);
+            animation: achGlow 2s ease-in-out infinite;
+        }
+        @keyframes achGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 170, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 170, 0, 0.6); }
+        }
+        .achievement-card.locked {
+            opacity: 0.4;
+            filter: grayscale(1);
+        }
+        .achievement-card .icon {
+            font-size: 2rem;
+            margin-bottom: 6px;
+        }
+        .achievement-card .name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .achievement-card.unlocked .name { color: #ffcc55; }
+
+        /* Аватарки */
+        .avatars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 8px;
+        }
+        .avatar-option {
+            aspect-ratio: 1;
+            border-radius: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .avatar-option:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(1.05);
+        }
+        .avatar-option.selected {
+            border-color: #6ec6a0;
+            background: linear-gradient(135deg, rgba(145, 70, 255, 0.3), rgba(110, 198, 160, 0.3));
+            box-shadow: 0 0 20px rgba(110, 198, 160, 0.5);
+        }
+
+        /* Игры */
+        .games-list {
+            display: flex; flex-direction: column; gap: 8px;
+            max-height: 300px; overflow-y: auto;
+        }
+        .game-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+        .game-item .mode {
+            font-weight: 600;
+            color: #a7c8ff;
+            text-transform: capitalize;
+        }
+        .game-item .score {
+            font-weight: 700;
+            color: #ffaa00;
+        }
+        .game-item .date {
+            font-size: 0.72rem;
+            color: #6b7a94;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #6b7a94;
+            font-size: 0.85rem;
+            padding: 1.5rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+            .profile-header { padding: 1.5rem 1rem; }
+            .avatar-big { width: 80px; height: 80px; font-size: 2.8rem; }
+            .profile-nick { font-size: 1.3rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .stat-card { padding: 12px 8px; }
+            .stat-card .value { font-size: 1.3rem; }
+            .achievements-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+            .avatar-option { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="index.html" class="back-btn">
+            <span>←</span>
+            <span>Главная</span>
+        </a>
+        <button class="logout-btn" id="logoutBtn">
+            <span>🚪</span>
+            <span>Выйти</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- Профиль -->
+        <div class="profile-header">
+            <div class="avatar-big" id="avatarBig" title="Нажми, чтобы сменить">🎮</div>
+            <div class="profile-nick" id="profileNick">Загрузка...</div>
+            <div class="profile-rank" id="profileRank">🎖️ Recruit</div>
+        </div>
+
+        <!-- Статистика -->
+        <div class="section">
+            <div class="section-title">📊 Статистика</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="value gold" id="statBest">0</div>
+                    <div class="label">Лучший рекорд</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value green" id="statGames">0</div>
+                    <div class="label">Всего игр</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value purple" id="statAvg">0</div>
+                    <div class="label">Средний счёт</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value pink" id="statAch">0/8</div>
+                    <div class="label">Достижения</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Достижения -->
+        <div class="section">
+            <div class="section-title">🎁 Достижения</div>
+            <div class="achievements-grid" id="achievementsGrid">
+                <div class="empty-state">Загрузка...</div>
+            </div>
+        </div>
+
+        <!-- История игр -->
+        <div class="section">
+            <div class="section-title">🎮 Последние игры</div>
+            <div class="games-list" id="gamesList">
+                <div class="empty-state">Пока нет игр</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка аватарок -->
+    <div class="modal" id="avatarModal" style="display:none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 style="text-align:center; margin-bottom: 1rem;">🎨 Выбери аватарку</h2>
+            <div class="avatars-grid" id="avatarsGrid"></div>
+            <button class="back-btn" id="closeAvatar" style="width:100%; margin-top: 1rem; justify-content: center;">Готово</button>
+        </div>
+    </div>
+
+    <style>
+        .modal {
+            position: fixed; inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-content {
+            background: rgba(18, 28, 40, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 1.5rem;
+            width: 100%;
+            animation: modalIn 0.3s ease-out;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getDatabase, ref, get, set, update, onValue, query, orderByChild, limitToLast } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBJhK6WR2N3e0SYf5TMLiwloRWTvWHeYTg",
+            authDomain: "ruslaanchik-4e266.firebaseapp.com",
+            databaseURL: "https://ruslaanchik-4e266-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "ruslaanchik-4e266",
+            storageBucket: "ruslaanchik-4e266.firebasestorage.app",
+            messagingSenderId: "218938988831",
+            appId: "1:218938988831:web:9a779ff712c63852fe782a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        const AVATARS = ['🎮','🎯','🔥','💚','👑','🦊','🐺','🐱','🦁','🐉','👽','🤖','🦄','⚡','💎','🌟','🎨','🎭','🦅','🐼'];
+
+        const RANKS = [
+            { name: 'Recruit', min: 0, max: 1000, icon: '🎖️' },
+            { name: 'Gunner', min: 1000, max: 3000, icon: '🔫' },
+            { name: 'Trooper', min: 3000, max: 5000, icon: '⚔️' },
+            { name: 'Captain', min: 5000, max: 8000, icon: '🎯' },
+            { name: 'Starlord', min: 8000, max: 12000, icon: '💠' },
+            { name: 'Lasermaster', min: 12000, max: 15000, icon: '👑' },
+            { name: 'Grandmaster', min: 15000, max: 20000, icon: '💫' },
+            { name: 'Legend', min: 20000, max: 25000, icon: '⚡' },
+            { name: 'Mythic', min: 25000, max: Infinity, icon: '🌟' }
+        ];
+
+        function getRank(score) {
+            for (const r of RANKS) {
+                if (score >= r.min && score < r.max) return r;
+            }
+            return RANKS[RANKS.length - 1];
+        }
+        function getRankKey(name) { return name.toLowerCase(); }
+
+        const ACHIEVEMENTS = [
+            { id: 'sniper', name: 'Снайпер', icon: '🎯', desc: 'Точность 90%+' },
+            { id: 'combo_master', name: 'Комбо-мастер', icon: '🔥', desc: 'Комбо x10' },
+            { id: 'fast', name: 'Скорострел', icon: '⚡', desc: '25+ попаданий' },
+            { id: 'perfect', name: 'Перфект', icon: '💎', desc: '100% точность' },
+            { id: 'reaction', name: 'Реакция', icon: '🏎️', desc: 'Реакция <250мс' },
+            { id: 'lasermaster', name: 'Лазермастер', icon: '👑', desc: '12 000 очков' },
+            { id: 'veteran', name: 'Ветеран', icon: '🎖️', desc: '5 000 очков' },
+            { id: 'tracking_king', name: 'Трекер', icon: '🟢', desc: 'Tracking 3 000' }
+        ];
+
+        let currentUser = null;
+        let currentNick = '';
+        let currentAvatar = '🎮';
+        let currentRank = RANKS[0];
+        let allScores = [];
+
+        // ===================== АВТОРИЗАЦИЯ =====================
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'auth.html';
+                return;
+            }
+            currentUser = user;
+            currentNick = user.displayName || user.email.split('@')[0];
+
+            document.getElementById('profileNick').textContent = currentNick;
+
+            // Загружаем аватарку из базы
+            const userRef = ref(db, 'users/' + user.uid);
+            const userSnap = await get(userRef);
+            const userData = userSnap.val();
+
+            if (userData && userData.avatar) {
+                currentAvatar = userData.avatar;
+            } else {
+                // Сохраняем дефолтную
+                await update(userRef, { avatar: '🎮' });
+            }
+            document.getElementById('avatarBig').textContent = currentAvatar;
+
+            // Подписка на scores в реальном времени
+            const scoresRef = query(ref(db, 'scores'), orderByChild('timestamp'), limitToLast(50));
+            onValue(scoresRef, (snapshot) => {
+                const data = snapshot.val();
+                if (!data) {
+                    allScores = [];
+                } else {
+                    allScores = Object.values(data).filter(s => s && s.uid === user.uid);
+                }
+                updateStats();
+                renderAchievements();
+                renderGames();
+            });
+        });
+
+        // ===================== СТАТИСТИКА =====================
+        function updateStats() {
+            const bestScore = allScores.length > 0 ? Math.max(...allScores.map(s => s.score)) : 0;
+            const gamesCount = allScores.length;
+            const avgScore = gamesCount > 0 ? Math.round(allScores.reduce((sum, s) => sum + s.score, 0) / gamesCount) : 0;
+
+            document.getElementById('statBest').textContent = bestScore.toLocaleString('ru-RU');
+            document.getElementById('statGames').textContent = gamesCount;
+            document.getElementById('statAvg').textContent = avgScore.toLocaleString('ru-RU');
+
+            // Ранг
+            const rank = getRank(bestScore);
+            const rankEl = document.getElementById('profileRank');
+            rankEl.className = 'profile-rank ' + getRankKey(rank.name);
+            rankEl.textContent = `${rank.icon} ${rank.name}`;
+        }
+
+        // ===================== ДОСТИЖЕНИЯ =====================
+        function renderAchievements() {
+            const grid = document.getElementById('achievementsGrid');
+
+            // Считаем разблокированные ачивки
+            const unlocked = new Set();
+            allScores.forEach(game => {
+                if (game.accuracy >= 90) unlocked.add('sniper');
+                if (game.maxCombo >= 10) unlocked.add('combo_master');
+                if (game.hits >= 25) unlocked.add('fast');
+                if (game.accuracy === 100 && game.hits >= 5) unlocked.add('perfect');
+                if (game.bestReaction > 0 && game.bestReaction < 250) unlocked.add('reaction');
+                if (game.score >= 12000) unlocked.add('lasermaster');
+                if (game.score >= 5000) unlocked.add('veteran');
+                if (game.mode === 'tracking' && game.score >= 3000) unlocked.add('tracking_king');
+            });
+
+            document.getElementById('statAch').textContent = `${unlocked.size}/8`;
+
+            grid.innerHTML = ACHIEVEMENTS.map(a => `
+                <div class="achievement-card ${unlocked.has(a.id) ? 'unlocked' : 'locked'}">
+                    <div class="icon">${a.icon}</div>
+                    <div class="name">${a.name}</div>
+                </div>
+            `).join('');
+        }
+
+        // ===================== ИСТОРИЯ ИГР =====================
+        function renderGames() {
+            const list = document.getElementById('gamesList');
+
+            if (!allScores.length) {
+                list.innerHTML = '<div class="empty-state">Пока нет игр. Сыграй в Aim Trainer! 🎯</div>';
+                return;
+            }
+
+            const sorted = [...allScores].sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
+
+            list.innerHTML = sorted.map(g => {
+                const date = new Date(g.timestamp);
+                const dateStr = date.toLocaleDateString('ru-RU', {
+                    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+                });
+                return `
+                    <div class="game-item">
+                        <div>
+                            <div class="mode">${g.mode || 'classic'}</div>
+                            <div class="date">${dateStr}</div>
+                        </div>
+                        <div class="score">${g.score}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ===================== АВАТАРКИ =====================
+        const avatarModal = document.getElementById('avatarModal');
+        const avatarsGrid = document.getElementById('avatarsGrid');
+
+        document.getElementById('avatarBig').addEventListener('click', () => {
+            avatarsGrid.innerHTML = AVATARS.map(a => `
+                <div class="avatar-option ${a === currentAvatar ? 'selected' : ''}" data-avatar="${a}">${a}</div>
+            `).join('');
+            avatarModal.style.display = 'flex';
+        });
+
+        avatarsGrid.addEventListener('click', async (e) => {
+            const opt = e.target.closest('.avatar-option');
+            if (!opt) return;
+
+            const newAvatar = opt.dataset.avatar;
+            currentAvatar = newAvatar;
+            document.getElementById('avatarBig').textContent = newAvatar;
+
+            // Обновляем UI
+            document.querySelectorAll('.avatar-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.avatar === newAvatar);
+            });
+
+            // Сохраняем в Firebase
+            if (currentUser) {
+                await update(ref(db, 'users/' + currentUser.uid), { avatar: newAvatar });
+            }
+        });
+
+        document.getElementById('closeAvatar').addEventListener('click', () => {
+            avatarModal.style.display = 'none';
+        });
+
+        avatarModal.addEventListener('click', (e) => {
+            if (e.target === avatarModal) avatarModal.style.display = 'none';
+        });
+
+        // ===================== ВЫХОД =====================
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            if (confirm('Выйти из аккаунта?')) {
+                signOut(auth).then(() => window.location.href = 'index.html');
+            }
+        });
+    </script>
+</body>
+  </html>
